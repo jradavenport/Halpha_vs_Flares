@@ -56,9 +56,42 @@ for k in range(len(kic_m)):
         ewha_m[k] = hdata['ewHa '].values[mtc][0]
         ewhaerr_m[k] = hdata['ewerr '].values[mtc][0]
 
-ok = np.where((ewha_m > -99))
+# only the M dwarfs in our sample with valid EWHA measurements
+ok = np.where((ewha_m > -99) & (ewhaerr_m < 100))
 
 
+#file from here: https://figshare.com/articles/Chi_values_for_K_and_M_dwarfs_Table_8_in_Douglas_14_/1275226
+chifile = 'chi_douglas2014.tsv'
+gr, ri, logchi = np.loadtxt(chifile, unpack=True, usecols=(2,3,10))
+
+gi_chi = gr + ri
+
+# get the chi value for each star
+logchi_m = np.interp(gi_m, gi_chi, logchi)
+
+lha_lbol_m = ewha_m * logchi_m * 10e-5
+lha_lbolerr_m = ewhaerr_m * logchi_m * 10e-5
+######### /LAMOST
+
+######### Leslie & Tessa
+tfile = 'tessa_red_ew1.txt'
+
+kic_t, ewha_t = np.loadtxt(tfile, usecols=(0,1), unpack=True, skiprows=1)
+
+ewha_mt = np.zeros_like(kic_m)-99
+for k in range(len(kic_t)):
+    mtc = np.where((kic_t[k] == kic_m))
+    if len(mtc[0])>0:
+        ewha_mt[mtc] = ewha_t[k]
+
+lha_lbol_mt = ewha_mt * logchi_m * 10e-5
+
+okt = np.where((ewha_mt > -99))
+######### /Leslie & Tessa
+
+
+
+### Plots...
 plt.figure()
 plt.scatter(ewha_m[ok], np.log10(fl_m[ok]))
 plt.xlim(-3,5)
@@ -69,21 +102,15 @@ plt.savefig('flare_vs_ewha.png')
 plt.close()
 
 
-chifile = 'chi_douglas2014.tsv'
-gr, ri, logchi = np.loadtxt(chifile, unpack=True, usecols=(2,3,10))
-
-gi_chi = gr + ri
-
-logchi_m = np.interp(gi_m, gi_chi, logchi)
-
-lha_lbol_m = ewha_m * (10**logchi_m)
-
-
 plt.figure()
-plt.scatter((lha_lbol_m[ok]), np.log10(fl_m[ok]))
-# plt.xlim(-3,5)
-# plt.ylim(-9,-2)
-plt.xlabel(' LHalpha/L$_{bol}$')
+plt.scatter(lha_lbol_m[ok], np.log10(fl_m[ok]), c='k')
+plt.errorbar(lha_lbol_m[ok], np.log10(fl_m[ok]), xerr=lha_lbolerr_m[ok],
+             fmt='o', color='k', marker='.')
+plt.scatter(lha_lbol_mt[okt], np.log10(fl_m[okt]), c='r')
+plt.xlim(-0.001, 0.003)
+plt.ylim(-9,-2)
+# plt.title('LAMOST-Kepler Overlap (~60 dM\'s)')
+plt.xlabel(r'LH$\alpha$/L$_{bol}$')
 plt.ylabel('log L$_{flare}$/L$_{kp}$')
-# plt.savefig('flare_vs_lhalbol.png')
-plt.show()
+plt.savefig('flare_vs_lhalbol.png',dpi=300)
+plt.close()
