@@ -25,6 +25,7 @@ kic_m = np.loadtxt(Mfile, delimiter=',', usecols=(0,), skiprows=1, unpack=True)
 
 ra_m = np.zeros_like(kic_m)-99
 de_m = np.zeros_like(kic_m)-99
+gi_m = np.zeros_like(kic_m)-99
 fl_m = np.zeros_like(kic_m)-99 # the Lfl/Lkp measurement!
 
 for k in range(len(kic_m)):
@@ -32,6 +33,7 @@ for k in range(len(kic_m)):
     ra_m[k] = ddata['ra'].values[mtc][0]
     de_m[k] = ddata['dec'].values[mtc][0]
     fl_m[k] = fdata['LflLbol'].values[mtc][0]
+    gi_m[k] = fdata['giclr'].values[mtc][0]
 
 ### this was ouput, sent to Vizier's Xmatch tool to match to LAMOST
 # dfout = pd.DataFrame(data={'ra':ra_m,'dec':de_m,'kicnum':kic_m})
@@ -67,5 +69,21 @@ plt.savefig('flare_vs_ewha.png')
 plt.close()
 
 
+chifile = 'chi_douglas2014.tsv'
+gr, ri, logchi = np.loadtxt(chifile, unpack=True, usecols=(2,3,10))
+
+gi_chi = gr + ri
+
+logchi_m = np.interp(gi_m, gi_chi, logchi)
+
+lha_lbol_m = ewha_m * (10**logchi_m)
 
 
+plt.figure()
+plt.scatter((lha_lbol_m[ok]), np.log10(fl_m[ok]))
+# plt.xlim(-3,5)
+# plt.ylim(-9,-2)
+plt.xlabel(' LHalpha/L$_{bol}$')
+plt.ylabel('log L$_{flare}$/L$_{kp}$')
+# plt.savefig('flare_vs_lhalbol.png')
+plt.show()
