@@ -35,12 +35,14 @@ for k in range(len(kic_m)):
     fl_m[k] = fdata['LflLbol'].values[mtc][0]
     gi_m[k] = fdata['giclr'].values[mtc][0]
 
-### this was ouput, sent to Vizier's Xmatch tool to match to LAMOST
+### this was ouput, sent to Vizier's Xmatch tool (http://cdsxmatch.u-strasbg.fr/xmatch#tab=xmatch&)
+### to match to LAMOST (V/146/dr1)
 # dfout = pd.DataFrame(data={'ra':ra_m,'dec':de_m,'kicnum':kic_m})
 # dfout.to_csv('allM_radec.csv')
 
 ### The object ID's from LAMOST that had matches in Amy's sample were then sent
-### to the LAMOST DR1 site, and spectra retrieved (lamost_match/fitspng1938584811/)
+### to the LAMOST DR1 site (http://dr1.lamost.org/q),
+### and spectra retrieved (lamost_match/fitspng1938584811/)
 
 ### With LAMOST spectra in hand, I then ran Hammer to get Halpha
 
@@ -59,8 +61,8 @@ for k in range(len(kic_m)):
 # only the M dwarfs in our sample with valid EWHA measurements
 ok = np.where((ewha_m > -99) & (ewhaerr_m < 100))
 
-
-#file from here: https://figshare.com/articles/Chi_values_for_K_and_M_dwarfs_Table_8_in_Douglas_14_/1275226
+# http://adsabs.harvard.edu/abs/2014ApJ...795..161D
+# file from here: https://figshare.com/articles/Chi_values_for_K_and_M_dwarfs_Table_8_in_Douglas_14_/1275226
 chifile = 'chi_douglas2014.tsv'
 gr, ri, logchi = np.loadtxt(chifile, unpack=True, usecols=(2,3,10))
 
@@ -89,9 +91,21 @@ lha_lbol_mt = ewha_mt * logchi_m * 10e-5
 okt = np.where((ewha_mt > -99))
 ######### /Leslie & Tessa
 
+# Need to make sure: are the classic Kepler flare M dwarfs (GJ 1243, GJ 1245AB)
+# in here? I don't think so yet... but we have good Halpha constraints!
+
+'''
+ GJ   Lfl/Lkp  Lha/Lbol
+1243    −3.78   −3.56
+1245A   −3.93   −4.14
+1245B   −4.00   −3.97
+'''
 
 
-### Plots...
+
+
+
+### Plots...!
 plt.figure()
 plt.scatter(ewha_m[ok], np.log10(fl_m[ok]))
 plt.xlim(-3,5)
@@ -107,9 +121,10 @@ plt.scatter(lha_lbol_m[ok], np.log10(fl_m[ok]), c='k')
 plt.errorbar(lha_lbol_m[ok], np.log10(fl_m[ok]), xerr=lha_lbolerr_m[ok],
              fmt='o', color='k', marker='.')
 plt.scatter(lha_lbol_mt[okt], np.log10(fl_m[okt]), c='r')
+plt.scatter([10**-3.56, 10**-4.14, 10**-3.97],
+            [-3.78, -3.93, -4.00], marker='^', s=40)
 plt.xlim(-0.001, 0.003)
 plt.ylim(-9,-2)
-# plt.title('LAMOST-Kepler Overlap (~60 dM\'s)')
 plt.xlabel(r'LH$\alpha$/L$_{bol}$')
 plt.ylabel('log L$_{flare}$/L$_{kp}$')
 plt.savefig('flare_vs_lhalbol.png',dpi=300)
