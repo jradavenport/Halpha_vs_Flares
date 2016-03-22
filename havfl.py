@@ -130,11 +130,11 @@ plt.figure()
 plt.scatter(lha_lbol_m[ok], np.log10(fl_m[ok]), c='k')
 plt.errorbar(lha_lbol_m[ok], np.log10(fl_m[ok]), xerr=lha_lbolerr_m[ok],
              fmt='o', color='k', marker='.')
-plt.scatter(lha_lbol_m[ok1], np.log10(fl_m[ok1]), c='k', marker='*', s=40)
+# plt.scatter(lha_lbol_m[ok1], np.log10(fl_m[ok1]), c='k', marker='*', s=40)
 
 # data for Tessa's stars
 plt.scatter(lha_lbol_mt[okt], np.log10(fl_m[okt]), c='r')
-plt.scatter(lha_lbol_mt[okt1], np.log10(fl_m[okt1]), c='r', marker='*', s=40)
+# plt.scatter(lha_lbol_mt[okt1], np.log10(fl_m[okt1]), c='r', marker='*', s=40)
 
 # data for GJ 1243, GJ 1245A, GJ 1245B
 plt.scatter([10**-3.56, 10**-4.14, 10**-3.97],
