@@ -21,7 +21,7 @@ Marcel will then use these to look for serendipitous X-ray detections
 '''
 
 Mfile = 'amy/all_m.txt'
-kic_m = np.loadtxt(Mfile, delimiter=',', usecols=(0,), skiprows=1, unpack=True)
+kic_m, kic_mper = np.loadtxt(Mfile, delimiter=',', usecols=(0,1), skiprows=1, unpack=True)
 
 ra_m = np.zeros_like(kic_m)-99
 de_m = np.zeros_like(kic_m)-99
@@ -60,6 +60,8 @@ for k in range(len(kic_m)):
 
 # only the M dwarfs in our sample with valid EWHA measurements
 ok = np.where((ewha_m > -99) & (ewhaerr_m < 100))
+ok1 = np.where((ewha_m > -99) & (ewhaerr_m < 100) & (kic_mper > 0))
+ok0 = np.where((ewha_m > -99) & (ewhaerr_m < 100) & (kic_mper <= 0))
 
 # http://adsabs.harvard.edu/abs/2014ApJ...795..161D
 # file from here: https://figshare.com/articles/Chi_values_for_K_and_M_dwarfs_Table_8_in_Douglas_14_/1275226
@@ -89,6 +91,9 @@ for k in range(len(kic_t)):
 lha_lbol_mt = ewha_mt * logchi_m * 10e-5
 
 okt = np.where((ewha_mt > -99))
+okt1 = np.where((ewha_mt > -99) & (kic_mper > 0))
+okt0 = np.where((ewha_mt > -99) & (kic_mper <= 0))
+
 ######### /Leslie & Tessa
 
 # Need to make sure: are the classic Kepler flare M dwarfs (GJ 1243, GJ 1245AB)
@@ -103,26 +108,38 @@ okt = np.where((ewha_mt > -99))
 
 
 
-
-
 ### Plots...!
-plt.figure()
-plt.scatter(ewha_m[ok], np.log10(fl_m[ok]))
-plt.xlim(-3,5)
-plt.ylim(-9,-2)
-plt.xlabel('EW Halpha')
-plt.ylabel('log L$_{flare}$/L$_{kp}$')
-plt.savefig('flare_vs_ewha.png')
-plt.close()
+# plt.figure()
+# plt.scatter(ewha_m[ok], np.log10(fl_m[ok]))
+# plt.xlim(-3,5)
+# plt.ylim(-9,-2)
+# plt.xlabel('EW Halpha')
+# plt.ylabel('log L$_{flare}$/L$_{kp}$')
+# plt.savefig('flare_vs_ewha.png')
+# plt.close()
+
+print('# LAMOST stars with Prot meas: ' + str(len(ok1[0])))
+print('# LAMOST stars without Prot meas: ' + str(len(ok0[0])))
+
+print('# Tessa stars with Prot meas: ' + str(len(okt1[0])))
+print('# Tessa stars without Prot meas: ' + str(len(okt0[0])))
 
 
 plt.figure()
+# LAMOST stars
 plt.scatter(lha_lbol_m[ok], np.log10(fl_m[ok]), c='k')
 plt.errorbar(lha_lbol_m[ok], np.log10(fl_m[ok]), xerr=lha_lbolerr_m[ok],
              fmt='o', color='k', marker='.')
+plt.scatter(lha_lbol_m[ok1], np.log10(fl_m[ok1]), c='k', marker='*', s=40)
+
+# data for Tessa's stars
 plt.scatter(lha_lbol_mt[okt], np.log10(fl_m[okt]), c='r')
+plt.scatter(lha_lbol_mt[okt1], np.log10(fl_m[okt1]), c='r', marker='*', s=40)
+
+# data for GJ 1243, GJ 1245A, GJ 1245B
 plt.scatter([10**-3.56, 10**-4.14, 10**-3.97],
             [-3.78, -3.93, -4.00], marker='^', s=40)
+
 plt.xlim(-0.001, 0.003)
 plt.ylim(-9,-2)
 plt.xlabel(r'LH$\alpha$/L$_{bol}$')
