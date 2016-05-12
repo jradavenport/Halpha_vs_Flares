@@ -15,8 +15,10 @@ fdata = pd.read_csv(flarefile)
 '''
 match Amy's M dwarf tables to the RA,Dec
 Marcel will then use these to look for serendipitous X-ray detections
+... none found.
 '''
 
+# all M dwarfs from Amy McQuillan's 2013 paper
 Mfile = '../data/mcquillan/all_m.csv'
 kic_m, kic_mper = np.loadtxt(Mfile, delimiter=',', usecols=(0,1), skiprows=1, unpack=True)
 
@@ -26,7 +28,7 @@ gi_m = np.zeros_like(kic_m)-99
 fl_m = np.zeros_like(kic_m)-99 # the Lfl/Lkp measurement!
 
 for k in range(len(kic_m)):
-    mtc = np.where((kic_m[k] == ddata['kicnum'].values))
+    mtc = np.where((kic_m[k] == fdata['kicnum'].values))
     ra_m[k] = fdata['ra'].values[mtc][0]
     de_m[k] = fdata['dec'].values[mtc][0]
     fl_m[k] = fdata['LflLkep'].values[mtc][0]
@@ -39,7 +41,7 @@ for k in range(len(kic_m)):
 
 ### The object ID's from LAMOST that had matches in Amy's sample were then sent
 ### to the LAMOST DR1 site (http://dr1.lamost.org/q),
-### and spectra retrieved (lamost_match/fitspng1938584811/)
+### and spectra retrieved (../data/lamost_match/fitspng1938584811/)
 
 ### With LAMOST spectra in hand, I then ran Hammer to get Halpha
 
@@ -58,7 +60,7 @@ for k in range(len(kic_m)):
         ewhaerr_m[k] = hdata['ewerr '].values[mtc][0]
         file_L[k] = hdata['eyename'].values[mtc][0]
 
-# only the M dwarfs in our sample with valid EWHA measurements
+# only want the M dwarfs in our sample with valid EWHA measurements
 ok = np.where((ewha_m > -99) & (ewhaerr_m < 100))
 ok1 = np.where((ewha_m > -99) & (ewhaerr_m < 100) & (kic_mper > 0))
 ok0 = np.where((ewha_m > -99) & (ewhaerr_m < 100) & (kic_mper <= 0))
@@ -156,11 +158,5 @@ plt.xlim(-0.001, 0.003)
 plt.ylim(-9,-2)
 plt.xlabel(r'LH$\alpha$/L$_{bol}$')
 plt.ylabel('log L$_{flare}$/L$_{kp}$')
-plt.savefig('figures/flare_vs_lhalbol.png',dpi=150)
+plt.savefig('../figures/flare_vs_lhalbol.png',dpi=150)
 plt.close()
-
-
-# plt.figure()
-# plt.scatter(kic_mper[ok], lha_lbol_m[ok], c='k')
-# plt.scatter(kic_mper[okt], lha_lbol_mt[okt], c='r')
-# plt.show()
