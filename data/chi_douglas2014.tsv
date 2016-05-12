@@ -1,7 +1,7 @@
 # Machine-readable version of Table 8 in Douglas et al. 2014 ApJ 795 161
 # Chi and synthetic photometry calculated from PHOENIX-ACES synthetic spectra (Husser et al. 2013)
 # Approximate spectral types from Kraus & Hillenbrand (2008)
-# Teff	g-r	r-i	i-z	z-J	J-H	H-K	r'-J	r'-K	log10(chi)
+# Teff  SpT  	g-r	r-i	i-z	z-J	J-H	H-K	r'-J	r'-K	log10(chi)
 5200	K0.3	0.660	0.192	0.069	0.935	0.491	0.025	1.183	1.699	9.170
 5100	K0.9	0.704	0.207	0.082	0.954	0.513	0.029	1.229	1.771	9.633
 5000	K1.4	0.751	0.223	0.094	0.974	0.536	0.033	1.277	1.847	9.592
